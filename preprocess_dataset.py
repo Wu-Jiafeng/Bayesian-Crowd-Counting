@@ -39,11 +39,11 @@ def find_dis(point):
     dis = np.mean(np.partition(dis, 3, axis=1)[:, 1:4], axis=1, keepdims=True)
     return dis
 
-def generate_data(im_path):
-    im = Image.open(im_path)
+def generate_data(subdir,im_path):
+    im = Image.open(subdir+"/images/"+im_path)
     im_w, im_h = im.size
-    mat_path = im_path.replace('.jpg', '_ann.mat')
-    points = loadmat(mat_path)['annPoints'].astype(np.float32)
+    mat_path = subdir+"/ground_truth/GT_"+im_path.replace('.jpg', '.mat')
+    points = loadmat(mat_path)['image_info'][0][0][0][0][0].astype(np.float32)
     idx_mask = (points[:, 0] >= 0) * (points[:, 0] <= im_w) * (points[:, 1] >= 0) * (points[:, 1] <= im_h)
     points = points[idx_mask]
     im_h, im_w, rr = cal_new_size(im_h, im_w, min_size, max_size)
@@ -55,10 +55,10 @@ def generate_data(im_path):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Test ')
-    parser.add_argument('--origin-dir', default='/home/teddy/UCF-QNRF_ECCV18',
+    parser = argparse.ArgumentParser(description='Test')
+    parser.add_argument('--origin-dir', default='./data/origin/part_A_final',
                         help='original data directory')
-    parser.add_argument('--data-dir', default='/home/teddy/UCF-Train-Val-Test',
+    parser.add_argument('--data-dir', default='./data/processed/part_A_final',
                         help='processed data directory')
     args = parser.parse_args()
     return args
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     min_size = 512
     max_size = 2048
 
-    for phase in ['Train', 'Test']:
+    for phase in [ 'Test']:
         sub_dir = os.path.join(args.origin_dir, phase)
         if phase == 'Train':
             sub_phase_list = ['train', 'val']
@@ -79,10 +79,11 @@ if __name__ == '__main__':
                     os.makedirs(sub_save_dir)
                 with open('{}.txt'.format(sub_phase)) as f:
                     for i in f:
-                        im_path = os.path.join(sub_dir, i.strip())
+                        #im_path = os.path.join(sub_dir, i.strip())
+                        im_path = i.strip()
                         name = os.path.basename(im_path)
-                        print(name)
-                        im, points = generate_data(im_path)
+                        name2= os.path.dirname(im_path)
+                        im, points = generate_data(sub_dir,im_path)
                         if sub_phase == 'train':
                             dis = find_dis(points)
                             points = np.concatenate((points, dis), axis=1)
@@ -94,11 +95,11 @@ if __name__ == '__main__':
             sub_save_dir = os.path.join(save_dir, 'test')
             if not os.path.exists(sub_save_dir):
                 os.makedirs(sub_save_dir)
-            im_list = glob(os.path.join(sub_dir, '*jpg'))
+            im_list = glob(os.path.join(sub_dir+"/images/", '*jpg'))
             for im_path in im_list:
                 name = os.path.basename(im_path)
                 print(name)
-                im, points = generate_data(im_path)
+                im, points = generate_data(sub_dir,name)
                 im_save_path = os.path.join(sub_save_dir, name)
                 im.save(im_save_path)
                 gd_save_path = im_save_path.replace('jpg', 'npy')

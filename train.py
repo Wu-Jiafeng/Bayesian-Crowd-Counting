@@ -6,12 +6,12 @@ args = None
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train ')
-    parser.add_argument('--data-dir', default='/home/teddy/UCF-Train-Val-Test',
+    parser.add_argument('--data-dir', default='./data/processed/part_A_final',
                         help='training data directory')
-    parser.add_argument('--save-dir', default='/home/teddy/vgg',
+    parser.add_argument('--save-dir', default='./data/model/vgg',
                         help='directory to save models.')
 
-    parser.add_argument('--lr', type=float, default=1e-5,
+    parser.add_argument('--lr', type=float, default=1e-6,
                         help='the initial learning rate')
     parser.add_argument('--weight-decay', type=float, default=1e-4,
                         help='the weight decay')
@@ -19,17 +19,17 @@ def parse_args():
                         help='the path of resume training model')
     parser.add_argument('--max-model-num', type=int, default=1,
                         help='max models num to save ')
-    parser.add_argument('--max-epoch', type=int, default=1000,
+    parser.add_argument('--max-epoch', type=int, default=20,
                         help='max training epoch')
-    parser.add_argument('--val-epoch', type=int, default=5,
+    parser.add_argument('--val-epoch', type=int, default=2,
                         help='the num of steps to log training information')
-    parser.add_argument('--val-start', type=int, default=600,
+    parser.add_argument('--val-start', type=int, default=1,
                         help='the epoch start to val')
 
     parser.add_argument('--batch-size', type=int, default=1,
                         help='train batch size')
     parser.add_argument('--device', default='0', help='assign device')
-    parser.add_argument('--num-workers', type=int, default=8,
+    parser.add_argument('--num-workers', type=int, default=4,
                         help='the num of training process')
 
     parser.add_argument('--is-gray', type=bool, default=False,
@@ -41,10 +41,14 @@ def parse_args():
 
     parser.add_argument('--use-background', type=bool, default=True,
                         help='whether to use background modelling')
-    parser.add_argument('--sigma', type=float, default=8.0,
-                        help='sigma for likelihood')
-    parser.add_argument('--background-ratio', type=float, default=0.15,
+    parser.add_argument('--fg-sigma', type=float, default=0.2,
+                        help='foreground sigma for likelihood')
+    parser.add_argument('--bg-sigma', type=float, default=8.0,
+                        help='background sigma for likelihood')
+    parser.add_argument('--background-ratio', type=float, default=0.1,
                         help='background ratio')
+    parser.add_argument('--kernel-NN', type=int, default=4,
+                        help='kernel NN')
     args = parser.parse_args()
     return args
 
