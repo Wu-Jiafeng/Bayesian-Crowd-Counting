@@ -5,7 +5,9 @@ from torch.nn import functional as F
 
 __all__ = ['vgg19']
 model_urls = {
-    'vgg19': 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth',
+    #'vgg19': 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth',
+    'vgg19': './data/model/vgg/vgg19-dcbb9e9d.pth',
+    #'vgg19': './data/model/vgg/best_model.pth',
 }
 
 class VGG(nn.Module):
@@ -51,6 +53,7 @@ def vgg19():
         model pre-trained on ImageNet
     """
     model = VGG(make_layers(cfg['E']))
-    model.load_state_dict(model_zoo.load_url(model_urls['vgg19']), strict=False)
+    #model.load_state_dict(model_zoo.load_url(model_urls['vgg19']), strict=False)
+    model.load_state_dict(torch.load(model_urls['vgg19']), strict=False)
     return model
 
