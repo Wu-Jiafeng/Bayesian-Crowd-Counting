@@ -11,7 +11,7 @@ import logging
 import numpy as np
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from  models.vgg import vgg19
-from datasets.crowd import Crowd
+from datasets.crowd_sh import Crowd
 from losses.bay_loss import Bay_Loss
 from losses.post_prob import Post_Prob
 
@@ -67,11 +67,13 @@ class RegTrainer(Trainer):
             elif suf == 'pth':
                 self.model.load_state_dict(torch.load(args.resume, self.device))
 
-        self.post_prob = Post_Prob(args.sigma,
+        self.post_prob = Post_Prob(args.fg_sigma,
+                                   args.bg_sigma,
                                    args.crop_size,
                                    args.downsample_ratio,
                                    args.background_ratio,
                                    args.use_background,
+                                   args.kernel_NN,
                                    self.device)
         self.criterion = Bay_Loss(args.use_background, self.device)
         self.save_list = Save_Handle(max_num=args.max_model_num)
@@ -149,17 +151,10 @@ class RegTrainer(Trainer):
         epoch_res = np.array(epoch_res)
         mse = np.sqrt(np.mean(np.square(epoch_res)))
         mae = np.mean(np.abs(epoch_res))
-        logging.info('Epoch {} Val, MSE: {:.2f} MAE: {:.2f}, Cost {:.1f} sec'
-                     .format(self.epoch, mse, mae, time.time()-epoch_start))
-
+        logging.info('Epoch {} Val, MSE: {:.2f} MAE: {:.2f}, Cost {:.1f} sec'.format(self.epoch, mse, mae, time.time()-epoch_start))
         model_state_dic = self.model.state_dict()
         if (2.0 * mse + mae) < (2.0 * self.best_mse + self.best_mae):
             self.best_mse = mse
             self.best_mae = mae
-            logging.info("save best mse {:.2f} mae {:.2f} model epoch {}".format(self.best_mse,
-                                                                                 self.best_mae,
-                                                                                 self.epoch))
+            logging.info("save best mse {:.2f} mae {:.2f} model epoch {}".format(self.best_mse,self.best_mae,self.epoch))
             torch.save(model_state_dic, os.path.join(self.save_dir, 'best_model.pth'))
-
-
-
