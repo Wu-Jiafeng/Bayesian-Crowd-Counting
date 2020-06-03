@@ -19,11 +19,11 @@ def parse_args():
                         help='the path of resume training model')
     parser.add_argument('--max-model-num', type=int, default=1,
                         help='max models num to save ')
-    parser.add_argument('--max-epoch', type=int, default=20,
+    parser.add_argument('--max-epoch', type=int, default=1000,
                         help='max training epoch')
-    parser.add_argument('--val-epoch', type=int, default=2,
+    parser.add_argument('--val-epoch', type=int, default=5,
                         help='the num of steps to log training information')
-    parser.add_argument('--val-start', type=int, default=1,
+    parser.add_argument('--val-start', type=int, default=600,
                         help='the epoch start to val')
 
     parser.add_argument('--batch-size', type=int, default=1,
@@ -41,11 +41,11 @@ def parse_args():
 
     parser.add_argument('--use-background', type=bool, default=True,
                         help='whether to use background modelling')
-    parser.add_argument('--fg-sigma', type=float, default=0.2,
+    parser.add_argument('--fg-sigma', type=float, default=0.3,
                         help='foreground sigma for likelihood')
     parser.add_argument('--bg-sigma', type=float, default=8.0,
                         help='background sigma for likelihood')
-    parser.add_argument('--background-ratio', type=float, default=0.1,
+    parser.add_argument('--background-ratio', type=float, default=0.8,
                         help='background ratio')
     parser.add_argument('--kernel-NN', type=int, default=4,
                         help='kernel NN')
